@@ -316,6 +316,34 @@ button:hover {
     cursor: pointer;
 }
 
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    padding: 12px 32px 20px;
+
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.footer a {
+    color: #9ca3af;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.footer a:hover {
+    color: #6b7280;
+    text-decoration: underline;
+}
+
+.footer-divider {
+    opacity: 0.5;
+}
+
 </style>
 </head>
 
@@ -378,6 +406,23 @@ button:hover {
         <div id="jobList" class="job-list"></div>
     </section>
 </main>
+<footer class="footer">
+    引用元：
+    <a
+        href="https://w.atwiki.jp/a4trpg/pages/21.html"
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        https://w.atwiki.jp/a4trpg/pages/21.html
+    </a>
+
+    <span class="footer-divider">
+        /
+    </span>
+
+    非公式ツール
+</footer>
+
 
 <script>
 
