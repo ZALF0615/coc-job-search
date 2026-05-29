@@ -1,870 +1,873 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CoC6版 職業技能検索</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoC6版 職業技能検索</title>
 
-<style>
-:root {
-    --bg: #f7f8fb;
-    --panel: #ffffff;
-    --text: #1f2937;
-    --muted: #6b7280;
-    --line: #e5e7eb;
-    --accent: #2563eb;
-    --accent-soft: #dbeafe;
-}
+    <style>
+        :root {
+            --bg: #f7f8fb;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --line: #e5e7eb;
+            --accent: #2563eb;
+            --accent-soft: #dbeafe;
+        }
 
-* {
-    box-sizing: border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-}
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
 
-header {
-    padding: 28px 32px 16px;
-}
+        header {
+            padding: 28px 32px 16px;
+        }
 
-h1 {
-    margin: 0 0 8px;
-    font-size: 28px;
-}
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
 
-.description {
-    margin: 0;
-    color: var(--muted);
-    font-size: 14px;
-}
+        .description {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-.layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
-    padding: 16px 32px 32px;
-}
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            padding: 16px 32px 32px;
+        }
 
-.panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-}
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+        }
 
-.sidebar {
-    position: sticky;
-    top: 16px;
-    height: calc(100vh - 32px);
-    overflow: auto;
-}
+        .sidebar {
+            position: sticky;
+            top: 16px;
+            height: calc(100vh - 32px);
+            overflow: auto;
+        }
 
-.panel-title {
-    margin: 0 0 12px;
-    font-size: 16px;
-}
+        .panel-title {
+            margin: 0 0 12px;
+            font-size: 16px;
+        }
 
-.search-box {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    font-size: 14px;
-    margin-bottom: 12px;
-}
+        .search-box {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
 
-.actions {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
 
-button {
-    border: 1px solid var(--line);
-    background: #fff;
-    border-radius: 999px;
-    padding: 7px 12px;
-    cursor: pointer;
-    font-size: 13px;
-}
+        button {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 999px;
+            padding: 7px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
 
-button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
+        button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
 
-.skill-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.skill-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 9px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 13px;
-    cursor: pointer;
-    background: #fff;
-}
+        .skill-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 9px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #fff;
+        }
 
-.skill-item:has(input:checked) {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    color: var(--accent);
-}
+        .skill-item:has(input:checked) {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
 
-.skill-item input {
-    margin: 0;
-}
+        .skill-item input {
+            margin: 0;
+        }
 
-.result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 14px;
-}
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
 
-.result-count {
-    color: var(--muted);
-    font-size: 14px;
-}
+        .result-count {
+            color: var(--muted);
+            font-size: 14px;
+        }
 
-.job-list {
-    display: grid;
-    gap: 10px;
-}
+        .job-list {
+            display: grid;
+            gap: 10px;
+        }
 
-.job-card {
-    padding: 14px 16px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: #fff;
-}
+        .job-card {
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #fff;
+        }
 
-.job-header {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-}
+        .job-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
 
-.job-name {
-    font-weight: 700;
-    font-size: 16px;
-}
+        .job-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
 
-.job-description {
-    color: var(--muted);
-    font-size: 13px;
-}
+        .job-description {
+            color: var(--muted);
+            font-size: 13px;
+        }
 
-.job-select-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 8px;
-}
+        .job-select-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 8px;
+        }
 
-.job-select-label {
-    flex-shrink: 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-    white-space: nowrap;
-    padding-top: 4px;
-}
+        .job-select-label {
+            flex-shrink: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+            padding-top: 4px;
+        }
 
-.job-select-row .job-skills {
-    flex: 1;
-}
+        .job-select-row .job-skills {
+            flex: 1;
+        }
 
-.job-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
+        .job-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
 
-.skill-chip {
-    font-size: 12px;
-    padding: 4px 7px;
-    border-radius: 999px;
-    background: #f3f4f6;
-    color: #374151;
-}
+        .skill-chip {
+            font-size: 12px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #374151;
+        }
 
-.skill-chip.active {
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 600;
-}
+        .skill-chip.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
 
-.empty {
-    padding: 40px;
-    text-align: center;
-    color: var(--muted);
-}
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: var(--muted);
+        }
 
-@media (max-width: 800px) {
-    .layout {
-        grid-template-columns: 1fr;
-        padding: 12px 16px 24px;
-    }
+        @media (max-width: 800px) {
+            .layout {
+                grid-template-columns: 1fr;
+                padding: 12px 16px 24px;
+            }
 
-    header {
-        padding: 24px 16px 12px;
-    }
+            header {
+                padding: 24px 16px 12px;
+            }
 
-    .sidebar {
-        position: static;
-        height: auto;
-        max-height: 420px;
-    }
-}
+            .sidebar {
+                position: static;
+                height: auto;
+                max-height: 420px;
+            }
+        }
 
-.category {
-    width: 100%;
-    margin-bottom: 12px;
-}
+        .category {
+            width: 100%;
+            margin-bottom: 12px;
+        }
 
-.category details {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: #fff;
-    overflow: hidden;
-}
+        .category details {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            overflow: hidden;
+        }
 
-.category summary {
-    cursor: pointer;
-    list-style: none;
-    padding: 12px 14px;
-    font-weight: 700;
-    user-select: none;
-    border-bottom: 1px solid transparent;
+        .category summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 12px 14px;
+            font-weight: 700;
+            user-select: none;
+            border-bottom: 1px solid transparent;
 
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-/* デフォルトの矢印を消す */
-.category summary::-webkit-details-marker {
-    display: none;
-}
+        /* デフォルトの矢印を消す */
+        .category summary::-webkit-details-marker {
+            display: none;
+        }
 
-/* 三角 */
-.category summary::before {
-    content: "▶";
-    font-size: 11px;
-    color: var(--muted);
-    transition: transform 0.15s ease;
-}
+        /* 三角 */
+        .category summary::before {
+            content: "▶";
+            font-size: 11px;
+            color: var(--muted);
+            transition: transform 0.15s ease;
+        }
 
-/* 開いた時 */
-.category details[open] summary::before {
-    transform: rotate(90deg);
-}
+        /* 開いた時 */
+        .category details[open] summary::before {
+            transform: rotate(90deg);
+        }
 
-.category-content {
-    padding: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
+        .category-content {
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.job-section-title {
-    margin-top: 12px;
-    margin-bottom: 6px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #374151;
-}
+        .job-section-title {
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
 
-.job-section-title.optional {
-    color: var(--accent);
-}
+        .job-section-title.optional {
+            color: var(--accent);
+        }
 
-.free-skill {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--muted);
-}
+        .free-skill {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-.search-mode {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: var(--muted);
-}
+        .search-mode {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-.search-mode label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-}
+        .search-mode label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
 
-.footer {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+        .footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
 
-    padding: 12px 32px 20px;
+            padding: 12px 32px 20px;
 
-    font-size: 11px;
-    color: #9ca3af;
-}
+            font-size: 11px;
+            color: #9ca3af;
+        }
 
-.footer a {
-    color: #9ca3af;
-    text-decoration: none;
-    word-break: break-all;
-}
+        .footer a {
+            color: #9ca3af;
+            text-decoration: none;
+            word-break: break-all;
+        }
 
-.footer a:hover {
-    color: #6b7280;
-    text-decoration: underline;
-}
+        .footer a:hover {
+            color: #6b7280;
+            text-decoration: underline;
+        }
 
-.footer-divider {
-    opacity: 0.5;
-}
-
-</style>
+        .footer-divider {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 
 <body>
-<header>
-    <h1>CoC6版 職業技能検索</h1>
-    <p class="description">技能をチェック、または推奨技能を入力すると、条件に合う職業を表示します。
-「いずれか含む」「すべて含む」で検索条件を切り替えられます。</p>
-</header>
+    <header>
+        <h1>CoC6版 職業技能検索</h1>
+        <p class="description">技能をチェック、または推奨技能を入力すると、条件に合う職業を表示します。
+            「いずれか含む」「すべて含む」で検索条件を切り替えられます。</p>
+    </header>
 
-<main class="layout">
-    <aside class="panel sidebar">
-        <h2 class="panel-title">技能</h2>
-        <input id="skillSearch" class="search-box" type="text" placeholder="技能を入力（例: 目星 聞き耳 図書館）">
+    <main class="layout">
+        <aside class="panel sidebar">
+            <h2 class="panel-title">技能</h2>
+            <input id="skillSearch" class="search-box" type="text" placeholder="技能を入力（例: 目星 聞き耳 図書館）">
 
-        <div class="search-mode">
+            <div class="search-mode">
 
-    <label>
-        <input
-            type="radio"
-            name="skillMode"
-            value="and"
-            checked
-        >
-        すべて含む
-    </label>
+                <label>
+                    <input type="radio" name="skillMode" value="and" checked>
+                    すべて含む
+                </label>
 
-    <label>
-        <input
-            type="radio"
-            name="skillMode"
-            value="or"
-        >
-        いずれか含む
-    </label>
+                <label>
+                    <input type="radio" name="skillMode" value="or">
+                    いずれか含む
+                </label>
 
-</div>
+            </div>
 
-        <div class="actions">
-            <button id="clearButton">選択解除</button>
-        </div>
+            <div class="actions">
 
-        <div id="skillList" class="skill-list"></div>
-    </aside>
+                <button id="clearButton">
+                    選択解除
+                </button>
 
-    <section class="panel">
-<div class="result-header">
-    <h2 class="panel-title">職業一覧</h2>
-    <div id="resultCount" class="result-count"></div>
-</div>
+                <button id="selectMatchedButton" style="display:none;">
+                    候補を選択
+                </button>
 
-<input
-    id="jobSearch"
-    class="search-box"
-    type="text"
-    placeholder="職業名・説明で検索"
->
-        </div>
+            </div>
 
-        <div id="jobList" class="job-list"></div>
-    </section>
-</main>
-<footer class="footer">
-    引用元：
-    <a
-        href="https://w.atwiki.jp/a4trpg/pages/21.html"
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        https://w.atwiki.jp/a4trpg/pages/21.html
-    </a>
+            <div id="skillList" class="skill-list"></div>
+        </aside>
 
-    <span class="footer-divider">
-        /
-    </span>
+        <section class="panel">
+            <div class="result-header">
+                <h2 class="panel-title">職業一覧</h2>
+                <div id="resultCount" class="result-count"></div>
+            </div>
 
-    非公式ツール
-</footer>
+            <input id="jobSearch" class="search-box" type="text" placeholder="職業名・説明で検索">
+            </div>
+
+            <div id="jobList" class="job-list"></div>
+        </section>
+    </main>
+    <footer class="footer">
+        引用元：
+        <a href="https://w.atwiki.jp/a4trpg/pages/21.html" target="_blank" rel="noopener noreferrer">
+            https://w.atwiki.jp/a4trpg/pages/21.html
+        </a>
+
+        <span class="footer-divider">
+            /
+        </span>
+
+        非公式ツール
+    </footer>
 
 
-<script>
+    <script>
 
-async function loadJobsCSV() {
+        async function loadJobsCSV() {
 
-    const response =
-        await fetch("jobs.csv");
+            const response =
+                await fetch("jobs.csv");
 
-    const csv =
-        await response.text();
+            const csv =
+                await response.text();
 
-    jobs = parseCSV(csv);
+            jobs = parseCSV(csv);
 
-    renderSkillList();
-    renderJobs();
-}
+            renderSkillList();
+            renderJobs();
+        }
 
-function parseCSV(csv) {
+        function parseCSV(csv) {
 
-    const rows =
-        csv
-        .trim()
-        .split("\n")
-        .slice(1)
-        .filter(row =>
-            row.trim() !== ""
-        );
+            const rows =
+                csv
+                    .trim()
+                    .split("\n")
+                    .slice(1)
+                    .filter(row =>
+                        row.trim() !== ""
+                    );
 
-    return rows.map(row => {
+            return rows.map(row => {
 
-        const cols =
-            parseCSVRow(row);
+                const cols =
+                    parseCSVRow(row);
 
-        const fixedSkills =
-            cols[2]
-                ? cols[2]
-                    .split("|")
-                    .map(s =>
-                        parseSkill(s.trim())
-                    )
-                : [];
+                const fixedSkills =
+                    cols[2]
+                        ? cols[2]
+                            .split("|")
+                            .map(s =>
+                                parseSkill(s.trim())
+                            )
+                        : [];
 
-        const selectSkills =
-            cols[3]
-                ? cols[3]
-                    .split(";")
-                    .map(group => {
+                const selectSkills =
+                    cols[3]
+                        ? cols[3]
+                            .split(";")
+                            .map(group => {
 
-                        const split =
-                            group.split(":");
+                                const split =
+                                    group.split(":");
 
-                        return {
-                            skills:
-                                split[0]
-                                    .split("|")
-                                    .map(s =>
-                                        parseSkill(
-                                            s.trim()
+                                return {
+                                    skills:
+                                        split[0]
+                                            .split("|")
+                                            .map(s =>
+                                                parseSkill(
+                                                    s.trim()
+                                                )
+                                            ),
+
+                                    count:
+                                        Number(
+                                            split[1] ?? 1
                                         )
-                                    ),
+                                };
+                            })
+                        : [];
 
-                            count:
-                                Number(
-                                    split[1] ?? 1
-                                )
-                        };
-                    })
-                : [];
+                const freeSkills =
+                    cols[4]
+                        ? cols[4]
+                            .split(";")
+                            .filter(group =>
+                                group.trim() !== ""
+                            )
+                            .map(group => {
 
-const freeSkills =
-    cols[4]
-        ? cols[4]
-            .split(";")
-            .filter(group =>
-                group.trim() !== ""
-            )
-            .map(group => {
+                                const split =
+                                    group.split(":");
 
-                const split =
-                    group.split(":");
+                                return {
+                                    label:
+                                        split[0].trim(),
+
+                                    count:
+                                        Number(
+                                            split[1] ?? 1
+                                        )
+                                };
+                            })
+                        : [];
 
                 return {
-                    label:
-                        split[0].trim(),
+                    name:
+                        cols[0],
 
-                    count:
-                        Number(
-                            split[1] ?? 1
-                        )
+                    description:
+                        cols[1]
+                            ? cols[1]
+                                .split("|")
+                            : [],
+
+                    fixedSkills,
+                    selectSkills,
+                    freeSkills
                 };
-            })
-        : [];
+            });
+        }
 
-        return {
-            name:
-                cols[0],
+        function parseCSVRow(row) {
 
-            description:
-                cols[1]
-                    ? cols[1]
-                        .split("|")
-                    : [],
+            const result = [];
 
-            fixedSkills,
-            selectSkills,
-            freeSkills
-        };
-    });
-}
+            let current = "";
+            let inQuotes = false;
 
-function parseCSVRow(row) {
+            for (let i = 0; i < row.length; i++) {
 
-    const result = [];
+                const char = row[i];
 
-    let current = "";
-    let inQuotes = false;
+                // quote toggle
+                if (char === '"') {
 
-    for (let i = 0; i < row.length; i++) {
+                    // escaped quote
+                    if (
+                        inQuotes &&
+                        row[i + 1] === '"'
+                    ) {
+                        current += '"';
+                        i++;
+                        continue;
+                    }
 
-        const char = row[i];
+                    inQuotes = !inQuotes;
+                    continue;
+                }
 
-        // quote toggle
-        if (char === '"') {
+                // comma split
+                if (
+                    char === "," &&
+                    !inQuotes
+                ) {
+                    result.push(current);
+                    current = "";
+                    continue;
+                }
 
-            // escaped quote
-            if (
-                inQuotes &&
-                row[i + 1] === '"'
-            ) {
-                current += '"';
-                i++;
-                continue;
+                current += char;
             }
 
-            inQuotes = !inQuotes;
-            continue;
-        }
-
-        // comma split
-        if (
-            char === "," &&
-            !inQuotes
-        ) {
             result.push(current);
-            current = "";
-            continue;
+
+            return result;
+        }
+        function parseList(text) {
+
+            if (!text)
+                return [];
+
+            return text.split("|");
         }
 
-        current += char;
-    }
+        function parseSkills(text) {
 
-    result.push(current);
+            if (!text)
+                return [];
 
-    return result;
-}
-function parseList(text) {
+            return text
+                .split("|")
+                .map(parseSkill);
+        }
 
-    if (!text)
-        return [];
+        function parseSkill(skillText) {
 
-    return text.split("|");
-}
+            const match =
+                skillText.match(
+                    /^(.+?)（(.+?)）$/
+                );
 
-function parseSkills(text) {
-
-    if (!text)
-        return [];
-
-    return text
-        .split("|")
-        .map(parseSkill);
-}
-
-function parseSkill(skillText) {
-
-    const match =
-        skillText.match(
-            /^(.+?)（(.+?)）$/
-        );
-
-    if (!match)
-        return skillText;
-
-    return {
-        name: match[1],
-        note: match[2]
-    };
-}
-
-function parseSelectSkills(text) {
-
-    if (!text)
-        return [];
-
-    const split =
-        text.split(":");
-
-    const count =
-        Number(split[1] ?? 1);
-
-    const skills =
-        split[0]
-            .split("|")
-            .map(parseSkill);
-
-    return [{
-        count,
-        skills
-    }];
-}
-
-function parseFreeSkills(text) {
-
-    if (!text)
-        return [];
-
-    return text
-        .split("|")
-        .map(item => {
-
-            const split =
-                item.split(":");
+            if (!match)
+                return skillText;
 
             return {
-                label: split[0],
-                count:
-                    Number(split[1] ?? 1)
+                name: match[1],
+                note: match[2]
             };
-        });
-}
-
-const jobSearchEl =    document.getElementById("jobSearch");
-const selectedSkills = new Set();
-const openedCategories = new Set();
-
-const skillCategories = {
-    "戦闘技能": [
-        "回避",
-        "キック",
-        "組み付き",
-        "こぶし",
-        "頭突き",
-        "投擲",
-        "マーシャルアーツ",
-        "拳銃",
-        "サブマシンガン",
-        "ショットガン",
-        "マシンガン",
-        "ライフル"
-    ],
-
-    "探索技能": [
-        "応急手当",
-        "鍵開け",
-        "隠す",
-        "隠れる",
-        "聞き耳",
-        "忍び歩き",
-        "写真術",
-        "精神分析",
-        "追跡",
-        "登攀",
-        "図書館",
-        "目星"
-    ],
-
-    "行動技能": [
-        "運転",
-        "機械修理",
-        "重機械操作",
-        "乗馬",
-        "水泳",
-        "製作",
-        "操縦",
-        "跳躍",
-        "電気修理",
-        "ナビゲート",
-        "変装"
-    ],
-
-    "交渉技能": [
-        "言いくるめ",
-        "信用",
-        "説得",
-        "値切り"
-    ],
-
-    "知識技能": [
-        "医学",
-        "オカルト",
-        "化学",
-        "芸術",
-        "経理",
-        "コンピューター",
-        "心理学",
-        "人類学",
-        "生物学",
-        "地質学",
-        "電子工学",
-        "天文学",
-        "博物学",
-        "物理学",
-        "法律",
-        "薬学",
-        "歴史",
-        "ほかの言語",
-        "母国語"
-    ]
-};
-
-const skillListEl = document.getElementById("skillList");
-const jobListEl = document.getElementById("jobList");
-const resultCountEl = document.getElementById("resultCount");
-const skillSearchEl = document.getElementById("skillSearch");
-const clearButton = document.getElementById("clearButton");
-const skillModeEls =
-    document.querySelectorAll(
-        'input[name="skillMode"]'
-    );
-
-
-function getSkillName(skill) {
-    return typeof skill === "string"
-        ? skill
-        : skill.name;
-}
-
-function getSkillSearchKeywords() {
-
-    const text =
-        skillSearchEl.value.trim();
-
-    if (!text)
-        return [];
-
-    return text
-        .split(/[\s、,，／/・\n\r\t【】「」『』（）()]+/)
-        .map(v => v.trim())
-        .filter(Boolean);
-}
-
-function getAllSkills() {
-
-    const skills = jobs.flatMap(job => [
-
-        ...(job.fixedSkills ?? []),
-
-        ...(job.selectSkills ?? [])
-            .flatMap(group => group.skills)
-    ])
-    .map(getSkillName);
-
-    return [...new Set(skills)]
-        .sort((a, b) =>
-            a.localeCompare(b, "ja")
-        );
-}
-
-function getSelectedSkills() {
-    return [...selectedSkills];
-}
-
-function getSkillMode() {
-
-    return document.querySelector(
-        'input[name="skillMode"]:checked'
-    ).value;
-}
-
-
-function renderSkillList() {
-    const keywords = getSkillSearchKeywords();
-    const selected = selectedSkills;
-
-    skillListEl.innerHTML = "";
-
-    Object.entries(skillCategories).forEach(([categoryName, skills]) => {
-
-const visibleSkills = skills.filter(skill => {
-    const exists =
-        getAllSkills().includes(skill);
-
-const keywordMatch =
-    keywords.length === 0
-        ? true
-        : keywords.some(keyword =>
-            skill.includes(keyword)
-        );
-
-    return exists && keywordMatch;
-});
-
-        if (visibleSkills.length === 0)
-            return;
-
-        const categoryDiv = document.createElement("div");
-        categoryDiv.className = "category";
-
-        const details = document.createElement("details");
-
-const hasCheckedSkill =    visibleSkills.some(skill =>        selectedSkills.has(skill)    );
-
-details.open =
-    openedCategories.has(
-        categoryName
-    ) ||
-    hasCheckedSkill;
-
-        const summary = document.createElement("summary");
-        summary.textContent = categoryName;
-
-        const content = document.createElement("div");
-
-details.addEventListener(
-    "toggle",
-    () => {
-
-        if (details.open) {
-            openedCategories.add(
-                categoryName
-            );
         }
-        else {
-            openedCategories.delete(
-                categoryName
-            );
+
+        function parseSelectSkills(text) {
+
+            if (!text)
+                return [];
+
+            const split =
+                text.split(":");
+
+            const count =
+                Number(split[1] ?? 1);
+
+            const skills =
+                split[0]
+                    .split("|")
+                    .map(parseSkill);
+
+            return [{
+                count,
+                skills
+            }];
         }
-    }
-);
 
-        content.className = "category-content";
+        function parseFreeSkills(text) {
 
-        visibleSkills.forEach(skill => {
+            if (!text)
+                return [];
 
-            const label = document.createElement("label");
-            label.className = "skill-item";
+            return text
+                .split("|")
+                .map(item => {
 
-            const checked = selected.has(skill)
-                ? "checked"
-                : "";
+                    const split =
+                        item.split(":");
 
-            label.innerHTML = `
+                    return {
+                        label: split[0],
+                        count:
+                            Number(split[1] ?? 1)
+                    };
+                });
+        }
+
+        const jobSearchEl = document.getElementById("jobSearch");
+        const selectedSkills = new Set();
+        const openedCategories = new Set();
+
+        const skillCategories = {
+            "戦闘技能": [
+                "回避",
+                "キック",
+                "組み付き",
+                "こぶし",
+                "頭突き",
+                "投擲",
+                "マーシャルアーツ",
+                "拳銃",
+                "サブマシンガン",
+                "ショットガン",
+                "マシンガン",
+                "ライフル"
+            ],
+
+            "探索技能": [
+                "応急手当",
+                "鍵開け",
+                "隠す",
+                "隠れる",
+                "聞き耳",
+                "忍び歩き",
+                "写真術",
+                "精神分析",
+                "追跡",
+                "登攀",
+                "図書館",
+                "目星"
+            ],
+
+            "行動技能": [
+                "運転",
+                "機械修理",
+                "重機械操作",
+                "乗馬",
+                "水泳",
+                "製作",
+                "操縦",
+                "跳躍",
+                "電気修理",
+                "ナビゲート",
+                "変装"
+            ],
+
+            "交渉技能": [
+                "言いくるめ",
+                "信用",
+                "説得",
+                "値切り"
+            ],
+
+            "知識技能": [
+                "医学",
+                "オカルト",
+                "化学",
+                "芸術",
+                "経理",
+                "考古学",
+                "コンピューター",
+                "心理学",
+                "人類学",
+                "生物学",
+                "地質学",
+                "電子工学",
+                "天文学",
+                "博物学",
+                "物理学",
+                "法律",
+                "薬学",
+                "歴史",
+                "ほかの言語",
+                "母国語"
+            ]
+        };
+
+        const skillListEl = document.getElementById("skillList");
+        const jobListEl = document.getElementById("jobList");
+        const resultCountEl = document.getElementById("resultCount");
+        const skillSearchEl = document.getElementById("skillSearch");
+        const clearButton = document.getElementById("clearButton");
+        const selectMatchedButton =
+            document.getElementById(
+                "selectMatchedButton"
+            );
+        const skillModeEls =
+            document.querySelectorAll(
+                'input[name="skillMode"]'
+            );
+
+
+        function getSkillName(skill) {
+            return typeof skill === "string"
+                ? skill
+                : skill.name;
+        }
+
+        function getSkillSearchKeywords() {
+
+            const text =
+                skillSearchEl.value.trim();
+
+            if (!text)
+                return [];
+
+            return text
+                .split(/[\s、,，／/・\n\r\t【】「」『』（）()＜＞〈〉]+/)
+                .map(v => v.trim())
+                .filter(Boolean);
+        }
+
+        function getAllSkills() {
+
+            const skills = jobs.flatMap(job => [
+
+                ...(job.fixedSkills ?? []),
+
+                ...(job.selectSkills ?? [])
+                    .flatMap(group => group.skills)
+            ])
+                .map(getSkillName);
+
+            return [...new Set(skills)]
+                .sort((a, b) =>
+                    a.localeCompare(b, "ja")
+                );
+        }
+
+        function getSelectedSkills() {
+            return [...selectedSkills];
+        }
+
+        function getSkillMode() {
+
+            return document.querySelector(
+                'input[name="skillMode"]:checked'
+            ).value;
+        }
+
+
+        function renderSkillList() {
+
+            const keywords =
+                getSkillSearchKeywords();
+
+            const selected =
+                selectedSkills;
+
+            skillListEl.innerHTML = "";
+            let totalMatchedSkills = [];
+            Object.entries(skillCategories).forEach(([categoryName, skills]) => {
+
+                const visibleSkills = skills.filter(skill => {
+                    const exists =
+                        getAllSkills().includes(skill);
+
+                    const keywordMatch =
+                        keywords.length === 0
+                            ? true
+                            : keywords.some(keyword =>
+                                skill.includes(keyword)
+                            );
+
+                    return exists && keywordMatch;
+                });
+
+                totalMatchedSkills.push(
+                    ...visibleSkills
+                );
+
+                if (visibleSkills.length === 0)
+                    return;
+
+                const categoryDiv = document.createElement("div");
+                categoryDiv.className = "category";
+
+                const details = document.createElement("details");
+
+                const hasCheckedSkill = visibleSkills.some(skill => selectedSkills.has(skill));
+
+                details.open =
+                    openedCategories.has(
+                        categoryName
+                    ) ||
+                    hasCheckedSkill;
+
+                const summary = document.createElement("summary");
+                summary.textContent = categoryName;
+
+                const content = document.createElement("div");
+
+                details.addEventListener(
+                    "toggle",
+                    () => {
+
+                        if (details.open) {
+                            openedCategories.add(
+                                categoryName
+                            );
+                        }
+                        else {
+                            openedCategories.delete(
+                                categoryName
+                            );
+                        }
+                    }
+                );
+
+                content.className = "category-content";
+
+                visibleSkills.forEach(skill => {
+
+                    const label = document.createElement("label");
+                    label.className = "skill-item";
+
+                    const checked = selected.has(skill)
+                        ? "checked"
+                        : "";
+
+                    label.innerHTML = `
                 <input
                     class="skill-checkbox"
                     type="checkbox"
@@ -874,303 +877,556 @@ details.addEventListener(
                 <span>${skill}</span>
             `;
 
-            content.appendChild(label);
-        });
+                    content.appendChild(label);
+                });
 
-        details.appendChild(summary);
-        details.appendChild(content);
+                details.appendChild(summary);
+                details.appendChild(content);
 
-        categoryDiv.appendChild(details);
-        skillListEl.appendChild(categoryDiv);
-    });
+                categoryDiv.appendChild(details);
+                skillListEl.appendChild(categoryDiv);
+            });
 
-document.querySelectorAll(".skill-checkbox")
-    .forEach(input => {
+            const hasSearch =
+                keywords.length > 0;
 
-        input.addEventListener("change", e => {
+            const hasMatchedSkills =
+                totalMatchedSkills.length > 0;
 
-            const skill = e.target.value;
+            selectMatchedButton.style.display =
+                hasSearch &&
+                    hasMatchedSkills
+                    ? ""
+                    : "none";
 
-if (e.target.checked) {
-    selectedSkills.add(skill);
-}
-else {
-    selectedSkills.delete(skill);
-}
+            document.querySelectorAll(".skill-checkbox")
+                .forEach(input => {
 
-renderSkillList();
-renderJobs();
-        });
-    });
-}
+                    input.addEventListener("change", e => {
 
-function renderJobs() {
+                        const skill = e.target.value;
 
-    const selectedSkills =
-        getSelectedSkills();
+                        if (e.target.checked) {
+                            selectedSkills.add(skill);
+                        }
+                        else {
+                            selectedSkills.delete(skill);
+                        }
 
-const keywords =
-    getSkillSearchKeywords();
+                        renderSkillList();
+                        renderJobs();
+                    });
+                });
+        }
 
-    const textKeyword =
-        jobSearchEl.value
-            .trim()
-            .toLowerCase();
+        function renderJobs() {
 
-    const filteredJobs =
-        jobs.filter(job => {
+            const selectedSkills =
+                getSelectedSkills();
 
-const searchableSkills = [
+            const textKeyword =
+                jobSearchEl.value
+                    .trim()
+                    .toLowerCase();
 
-    ...(job.fixedSkills ?? []),
+            const filteredJobs =
+                jobs.filter(job => {
 
-    ...(job.selectSkills ?? [])
-        .flatMap(group => group.skills)
+                    const searchableSkills = [
 
-].map(getSkillName);
+                        ...(job.fixedSkills ?? []),
 
-const mode =
-    getSkillMode();
+                        ...(job.selectSkills ?? [])
+                            .flatMap(group => group.skills)
 
-const checkboxMatch =
-    selectedSkills.length === 0
-        ? true
+                    ].map(getSkillName);
 
-        : mode === "and"
+                    const mode =
+                        getSkillMode();
 
-        // AND
-        ? selectedSkills.every(skill =>
-            searchableSkills.includes(skill)
-        )
+                    let usedFreeSlots = 0;
 
-        // OR
-        : selectedSkills.some(skill =>
-            searchableSkills.includes(skill)
-        );
+                    const totalFreeSlots =
+                        (job.freeSkills ?? [])
+                            .reduce(
+                                (sum, group) =>
+                                    sum + group.count,
+                                0
+                            );
 
-const keywordMatchSkill =
-    keywords.length === 0
-        ? true
-        : keywords.some(keyword =>
+                    const missingSkills =
+                        selectedSkills.filter(skill =>
+                            !searchableSkills.includes(
+                                skill
+                            )
+                        );
 
-            searchableSkills.some(skill => {
+                    let consumedFreeSkills = [];
 
-                const skillName =
-                    typeof skill === "string"
-                        ? skill
-                        : skill.name;
+                    const checkboxMatch =
 
-                return skillName.includes(
-                    keyword
-                );
-            })
-        );
+                        // チェックなし
+                        selectedSkills.length === 0
 
-const skillMatch =
-    checkboxMatch &&
-    keywordMatchSkill;
+                            ? true
 
-    // 職業文字列検索
-    const text =
-        [
-            job.name,
-            ...(job.description ?? [])
-        ]
-        .join(" ")
-        .toLowerCase();
+                            : mode === "or"
 
-const keywordMatch =
-    textKeyword === ""
-        ? true
-        : text.includes(textKeyword);
+                                // OR
+                                ? selectedSkills.some(skill =>
+                                    searchableSkills.includes(
+                                        skill
+                                    )
+                                )
 
-    return skillMatch &&
-        keywordMatch;
-});
+                                : (() => {
 
-    jobListEl.innerHTML = "";
+                                    consumedFreeSkills = [];
 
-    resultCountEl.textContent =
-        `${filteredJobs.length}件`;
+                                    // 固定技能に無いもの
+                                    const remainingSkills =
+                                        [...missingSkills];
 
-    if (filteredJobs.length === 0) {
-        jobListEl.innerHTML =
-            `<div class="empty">
+                                    // 選択技能を消費
+                                    let selectRemainings = [];
+
+                                    for (
+                                        const group of
+                                        (job.selectSkills ?? [])
+                                    ) {
+
+                                        const matched =
+                                            selectedSkills.filter(
+                                                skill =>
+                                                    group.skills
+                                                        .map(getSkillName)
+                                                        .includes(skill)
+                                            );
+
+                                        const remain =
+                                            Math.max(
+                                                0,
+                                                group.count -
+                                                matched.length
+                                            );
+
+                                        // 選択上限超過 → 不一致
+                                        if (
+                                            matched.length >
+                                            group.count
+                                        ) {
+                                            return false;
+                                        }
+
+
+                                        selectRemainings.push({
+                                            group,
+                                            remain,
+                                            selected:
+                                                matched
+                                        });
+
+                                        // 消費済み削除
+                                        matched.forEach(skill => {
+
+                                            const index =
+                                                remainingSkills.indexOf(
+                                                    skill
+                                                );
+
+                                            if (index >= 0) {
+                                                remainingSkills.splice(
+                                                    index,
+                                                    1
+                                                );
+                                            }
+                                        });
+                                    }
+
+                                    // 残りは自由枠へ
+                                    consumedFreeSkills =
+                                        [...remainingSkills];
+
+                                    usedFreeSlots =
+                                        consumedFreeSkills.length;
+
+                                    job.selectRemainings =
+                                        selectRemainings;
+
+
+                                    const selectValid =
+                                        selectRemainings.every(
+                                            item => {
+
+                                                const matchedCount =
+                                                    item.selected.length;
+
+                                                // 超過NG
+                                                if (
+                                                    matchedCount >
+                                                    item.group.count
+                                                ) {
+                                                    return false;
+                                                }
+
+                                                // 選択されてないなら
+                                                // 自由枠に回せる
+                                                return true;
+                                            }
+                                        );
+
+                                    return (
+                                        selectValid &&
+                                        usedFreeSlots <=
+                                        totalFreeSlots
+                                    );
+
+                                })();
+
+                    const skillMatch =
+                        checkboxMatch;
+
+                    // 職業文字列検索
+                    const text =
+                        [
+                            job.name,
+                            ...(job.description ?? [])
+                        ]
+                            .join(" ")
+                            .toLowerCase();
+
+                    const keywordMatch =
+                        textKeyword === ""
+                            ? true
+                            : text.includes(textKeyword);
+
+                    job.usedFreeSlots = usedFreeSlots;
+                    job.consumedFreeSkills = consumedFreeSkills;
+                    job.totalFreeSlots = totalFreeSlots;
+
+                    return skillMatch && keywordMatch;
+                });
+
+            jobListEl.innerHTML = "";
+
+            resultCountEl.textContent =
+                `${filteredJobs.length}件`;
+
+            if (filteredJobs.length === 0) {
+                jobListEl.innerHTML =
+                    `<div class="empty">
                 該当する職業がありません。
             </div>`;
-        return;
-    }
+                return;
+            }
 
-    filteredJobs.forEach(job => {
+            filteredJobs.forEach(job => {
 
-        const card =
-            document.createElement("div");
+                const card =
+                    document.createElement("div");
 
-        card.className = "job-card";
+                card.className = "job-card";
 
-const descriptionText =
-    (job.description ?? [])
-        .join(" / ");
+                const descriptionText =
+                    (job.description ?? [])
+                        .join(" / ");
 
-let html =
-    `
+                let html =
+                    `
     <div class="job-header">
 
         <div class="job-name">
             ${job.name}
         </div>
 
-        ${
-            descriptionText
-            ? `
+        ${descriptionText
+                        ? `
             <div class="job-description">
                 ${descriptionText}
             </div>
             `
-            : ""
-        }
+                        : ""
+                    }
 
     </div>
 `;
 
-        // 固定技能
-        if (job.fixedSkills?.length) {
+                // 固定技能
+                if (job.fixedSkills?.length) {
 
-            const fixedHtml =
-                job.fixedSkills
-.map(skill => {
+                    const fixedHtml =
+                        job.fixedSkills
+                            .map(skill => {
 
-    const skillObj =
-        typeof skill === "string"
-            ? { name: skill }
-            : skill;
+                                const skillObj =
+                                    typeof skill === "string"
+                                        ? { name: skill }
+                                        : skill;
 
-    const active =
-        selectedSkills.includes(skillObj.name)
-            ? "active"
-            : "";
+                                const active =
+                                    selectedSkills.includes(skillObj.name)
+                                        ? "active"
+                                        : "";
 
-    const label =
-        skillObj.note
-            ? `${skillObj.name}（${skillObj.note}）`
-            : skillObj.name;
+                                const label =
+                                    skillObj.note
+                                        ? `${skillObj.name}（${skillObj.note}）`
+                                        : skillObj.name;
 
-    return `
+                                return `
         <span class="skill-chip ${active}">
             ${label}
         </span>
     `;
-})
-                    .join("");
+                            })
+                            .join("");
 
-        html += `
+                    html += `
             <div class="job-skills">
                 ${fixedHtml}
             </div>
         `;
-        }
+                }
 
-        // 選択技能
-        if (job.selectSkills?.length) {
+                // 選択技能
+                if (job.selectSkills?.length) {
 
-            job.selectSkills.forEach(group => {
+                    job.selectSkills.forEach((group, index) => {
 
-const selectHtml =
-    group.skills
-        .map(skill => {
+                        const selectHtml =
+                            group.skills
+                                .map(skill => {
 
-            const skillObj =
-                typeof skill === "string"
-                    ? { name: skill }
-                    : skill;
+                                    const skillObj =
+                                        typeof skill === "string"
+                                            ? { name: skill }
+                                            : skill;
 
-            const active =
-                selectedSkills.includes(
-                    skillObj.name
-                )
-                    ? "active"
-                    : "";
+                                    const active =
+                                        selectedSkills.includes(
+                                            skillObj.name
+                                        )
+                                            ? "active"
+                                            : "";
 
-            const label =
-                skillObj.note
-                    ? `${skillObj.name}（${skillObj.note}）`
-                    : skillObj.name;
+                                    const label =
+                                        skillObj.note
+                                            ? `${skillObj.name}（${skillObj.note}）`
+                                            : skillObj.name;
 
-            return `
+                                    return `
                 <span class="skill-chip ${active}">
                     ${label}
                 </span>
             `;
-        })
-        .join("");
-html += `
+                                })
+                                .join("");
+                        html += `
     <div class="job-select-row">
 
         <div class="job-select-label">
             ＋以下から${group.count}つ選択
         </div>
 
-        <div class="job-skills">
-            ${selectHtml}
+<div class="job-skills">
+    ${selectHtml}
+
+${(() => {
+
+                                const selectInfo =
+                                    job
+                                        .selectRemainings?.[
+                                    index
+                                    ];
+
+                                const remain =
+                                    selectInfo?.remain ?? 0;
+
+                                const selectedCount =
+                                    selectInfo?.selected
+                                        ?.length ?? 0;
+
+                                // 何も選ばれてなければ出さない
+                                if (
+                                    selectedCount === 0
+                                ) {
+                                    return "";
+                                }
+
+                                return `
+                                <span
+                                    style="
+                                        color:#6b7280;
+                                        font-size:12px;
+                                        font-weight:600;
+                                        align-self:center;
+                                    "
+                                >
+                                    （残り:
+                                    ${remain}）
+                                </span>
+                            `;
+                            })()
+                            }
+
+</div>
+
+    </div>
+`;
+
+                    });
+                }
+
+                // 自由技能
+                if (job.freeSkills?.length) {
+
+                    job.freeSkills.forEach(group => {
+                        const usedSkills =
+                            (job.consumedFreeSkills ?? [])
+                                .slice(0, group.count);
+
+                        const remain =
+                            group.count -
+                            usedSkills.length;
+
+                        html += `
+    <div
+        class="job-select-row"
+    >
+
+<div
+    class="job-select-label"
+    style="
+        color:var(--muted);
+        font-weight:500;
+    "
+>
+            ＋${group.label}
+            から好きな技能
+            ${group.count}つ
+
+
+${usedSkills.length > 0
+                                ? `
+    <span
+        style="
+        color:#6b7280;
+        font-size:12px;
+        font-weight:600;
+        margin-left:4px;
+        align-self:center;
+        "
+    >
+        （残り:
+        ${remain}）
+    </span>
+    `
+                                : ""
+                            }
+
+        </div>
+
+        <div
+            class="job-skills"
+        >
+
+            ${usedSkills
+                                .map(skill => `
+                    <span
+                        class="
+                            skill-chip
+                            active
+                        "
+                    >
+                        ${skill}
+                    </span>
+                `)
+                                .join("")
+                            }
+
         </div>
 
     </div>
 `;
 
+
+                    });
+                }
+
+                card.innerHTML = html;
+
+                jobListEl.appendChild(card);
             });
         }
 
-        // 自由技能
-        if (job.freeSkills?.length) {
+        skillSearchEl.addEventListener(
+            "input",
+            () => {
+                renderSkillList();
+                renderJobs();
+            }
+        );
 
-            job.freeSkills.forEach(group => {
+        clearButton.addEventListener("click", () => {
+            selectedSkills.clear();
 
-                html += `
-                    <div class="free-skill">
-                        ＋${group.label}から好きな技能${group.count}つ
-                    </div>
-                `;
-            });
-        }
-
-        card.innerHTML = html;
-
-        jobListEl.appendChild(card);
-    });
-}
-
-skillSearchEl.addEventListener(
-    "input",
-    () => {
-        renderSkillList();
-        renderJobs();
-    }
-);
-
-clearButton.addEventListener("click", () => {
-    selectedSkills.clear();
-
-    renderSkillList();
-    renderJobs();
-});
-
-jobSearchEl.addEventListener(
-    "input",
-    renderJobs
-);
-
-skillModeEls.forEach(el => {
-
-    el.addEventListener(
-        "change",
-        () => {
             renderSkillList();
             renderJobs();
-        }
-    );
-});
+        });
 
-loadJobsCSV();
-</script>
+        jobSearchEl.addEventListener(
+            "input",
+            renderJobs
+        );
+
+        skillModeEls.forEach(el => {
+
+            el.addEventListener(
+                "change",
+                () => {
+                    renderSkillList();
+                    renderJobs();
+                }
+            );
+        });
+
+        selectMatchedButton
+            .addEventListener(
+                "click",
+                () => {
+
+                    const keywords =
+                        getSkillSearchKeywords();
+
+                    if (
+                        keywords.length === 0
+                    ) return;
+
+                    const matchedSkills =
+                        getAllSkills()
+                            .filter(skill =>
+                                keywords.some(
+                                    keyword =>
+                                        skill.includes(
+                                            keyword
+                                        )
+                                )
+                            );
+
+                    matchedSkills.forEach(
+                        skill =>
+                            selectedSkills.add(
+                                skill
+                            )
+                    );
+
+                    renderSkillList();
+                    renderJobs();
+                }
+            );
+
+        loadJobsCSV();
+    </script>
 </body>
+
 </html>
