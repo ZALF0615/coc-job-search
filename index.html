@@ -211,8 +211,8 @@
         }
 
         .skill-chip.suggestion-active {
-background: #dcfce7;
-color: #16a34a;
+            background: #dcfce7;
+            color: #16a34a;
             font-weight: 600;
         }
 
@@ -350,6 +350,45 @@ color: #16a34a;
         .footer-divider {
             opacity: 0.5;
         }
+
+        .suggestion-wrapper {
+            margin-top: 20px;
+            border: 1px solid #bbf7d0;
+            border-radius: 16px;
+            background: #f0fdf4;
+            overflow: hidden;
+        }
+
+        .suggestion-summary {
+            cursor: pointer;
+            padding: 14px 16px;
+            font-weight: 700;
+            color: #15803d;
+            background: #dcfce7;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            user-select: none;
+        }
+
+        .suggestion-summary:hover {
+            background: #d1fae5;
+        }
+
+        .suggestion-content {
+            padding: 14px;
+        }
+
+        .suggestion-card {
+            border-left: 5px solid #22c55e;
+            background: #ffffffcc;
+        }
+
+        .job-select-label.suggestion {
+            color: #16a34a;
+        }
     </style>
 </head>
 
@@ -396,8 +435,33 @@ color: #16a34a;
 
         <section class="panel">
             <div class="result-header">
-                <h2 class="panel-title">職業一覧</h2>
-                <div id="resultCount" class="result-count"></div>
+
+                <div style="
+            display:flex;
+            align-items:center;
+            gap:12px;
+        ">
+                    <h2 class="panel-title">
+                        職業一覧
+                    </h2>
+
+                    <label style="
+                display:flex;
+                align-items:center;
+                gap:4px;
+                font-size:13px;
+                color:var(--muted);
+                cursor:pointer;
+                user-select:none;
+            ">
+                        <input id="showSuggestions" type="checkbox">
+                        近い職業候補を表示
+                    </label>
+                </div>
+
+                <div id="resultCount" class="result-count">
+                </div>
+
             </div>
 
             <input id="jobSearch" class="search-box" type="text" placeholder="職業名・説明で検索">
@@ -743,7 +807,10 @@ color: #16a34a;
             document.querySelectorAll(
                 'input[name="skillMode"]'
             );
-
+        const showSuggestionsEl =
+            document.getElementById(
+                "showSuggestions"
+            );
 
         function getSkillName(skill) {
             return typeof skill === "string"
@@ -1116,7 +1183,6 @@ color: #16a34a;
                 });
 
             if (
-                filteredJobs.length === 0 &&
                 selectedSkills.length > 0
             ) {
 
@@ -1175,199 +1241,92 @@ color: #16a34a;
                         .slice(0, 5);
             }
 
+
             jobListEl.innerHTML = "";
 
             resultCountEl.textContent =
                 `${filteredJobs.length}件`;
 
-            if (
-                filteredJobs.length === 0
-            ) {
 
-                let html = `
+            // -----------------------------
+            // 0件時メッセージ
+            // -----------------------------
+            if (filteredJobs.length === 0) {
+
+                jobListEl.innerHTML = `
         <div class="empty">
             該当する職業がありません。
         </div>
     `;
+            }
 
-                if (
-                    suggestions.length > 0
-                ) {
 
-                    html += `
-            <div
-                style="
-                    margin-top:20px;
-                "
-            >
-                <div
-                    style="
-                        font-weight:700;
-                        margin-bottom:10px;
-                        color:#374151;
-                    "
-                >
-                    近い職業候補
-                </div>
-        `;
+            // -----------------------------
+            // 候補（常に表示）
+            // -----------------------------
+            if (selectedSkills.length > 0) {
 
-                    suggestions.forEach(
-                        item => {
+                suggestions =
+                    jobs
+                        .map(job => {
 
-                            const job =
-                                item.job;
+                            const searchableSkills = [
 
-                            const descriptionText =
-                                (
-                                    job.description
-                                    ?? []
-                                ).join(
-                                    " / "
+                                ...(job.fixedSkills ?? []),
+
+                                ...(job.selectSkills ?? [])
+                                    .flatMap(
+                                        group =>
+                                            group.skills
+                                    )
+
+                            ].map(getSkillName);
+
+                            const matchedSkills =
+                                selectedSkills.filter(
+                                    skill =>
+                                        searchableSkills.includes(
+                                            skill
+                                        )
                                 );
 
-                            html += `
-                    <div
-                        class="job-card"
-                        style="
-                            opacity:0.9;
-                            margin-bottom:10px;
-                        "
-                    >
+                            const missingSkills =
+                                selectedSkills.filter(
+                                    skill =>
+                                        !searchableSkills.includes(
+                                            skill
+                                        )
+                                );
 
-                        <div
-                            class="job-header"
-                        >
+                            const score =
+                                matchedSkills.length /
+                                selectedSkills.length;
 
-                            <div
-                                class="job-name"
-                            >
-                                ${job.name}
-                            </div>
-
-                            <div
-                                class="
-                                    job-description
-                                "
-                            >
-                                ${Math.round(
-                                item.score
-                                * 100
-                            )}%一致
-                            </div>
-
-                        </div>
-                `;
-
-                            // 説明
-                            if (descriptionText) {
-
-                                html += `
-        <div
-            class="job-description"
-            style="margin-bottom:8px;"
-        >
-            ${descriptionText}
-        </div>
-    `;
-                            }
-
-                            // 固定技能
-                            if (job.fixedSkills?.length) {
-
-                                html += `
-        <div class="job-skills">
-    `;
-
-                                job.fixedSkills.forEach(skill => {
-
-                                    const skillName =
-                                        getSkillName(skill);
-
-                                    const matched =
-                                        item.matchedSkills
-                                            .includes(skillName);
-
-                                    html += `
-            <span
-                class="
-    skill-chip
-    ${matched
-        ? "suggestion-active"
-        : ""
-    }
-"
-            >
-                ${skillName}
-            </span>
-        `;
-                                });
-
-                                html += `
-        </div>
-    `;
-                            }
-
-                            // 選択技能
-                            if (job.selectSkills?.length) {
-
-                                job.selectSkills.forEach(group => {
-
-                                    html += `
-            <div class="job-select-row">
-                <div class="job-select-label">
-                    ＋以下から${group.count}つ選択
-                </div>
-
-                <div class="job-skills">
-        `;
-
-                                    group.skills.forEach(skill => {
-
-                                        const skillName =
-                                            getSkillName(skill);
-
-                                        const matched =
-                                            item.matchedSkills
-                                                .includes(skillName);
-
-                                        html += `
-                <span
-                    class="
-    skill-chip
-    ${matched
-        ? "suggestion-active"
-        : ""
-    }
-"
-                >
-                    ${skillName}
-                </span>
-            `;
-                                    });
-
-                                    html += `
-                </div>
-            </div>
-        `;
-                                });
-                            }
-
-                            html += `
-    </div>
-`;
-                        }
-                    );
-
-                    html += `
-            </div>
-        `;
-                }
-
-                jobListEl.innerHTML =
-                    html;
-
-                return;
+                            return {
+                                job,
+                                score,
+                                matchedSkills,
+                                missingSkills,
+                                searchableSkills
+                            };
+                        })
+                        .filter(item =>
+                            item.score > 0 &&
+                            !filteredJobs.includes(
+                                item.job
+                            )
+                        )
+                        .sort(
+                            (a, b) =>
+                                b.score -
+                                a.score
+                        )
+                        .slice(0, 5);
             }
+
+
+
+
 
             filteredJobs.forEach(job => {
 
@@ -1606,6 +1565,208 @@ ${usedSkills.length > 0
 
                 jobListEl.appendChild(card);
             });
+
+            // -----------------------------
+            // 候補HTML生成
+            // -----------------------------
+            if (suggestions.length > 0 &&
+                showSuggestionsEl.checked) {
+
+                const suggestionContainer =
+                    document.createElement("div");
+
+                suggestionContainer.style.marginTop =
+                    "20px";
+
+                suggestionContainer.innerHTML = `
+<div
+    style="
+        margin-top:16px;
+        margin-bottom:8px;
+        font-size:16px;
+        font-weight:700;
+        color:var(--text);
+    "
+>
+    近い職業候補
+</div>
+    `;
+
+                suggestions.forEach(item => {
+
+                    const job =
+                        item.job;
+
+                    const descriptionText =
+                        (
+                            job.description
+                            ?? []
+                        ).join(" / ");
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className =
+                        "job-card";
+
+                    card.style.opacity =
+                        "0.92";
+
+                    card.style.marginBottom =
+                        "10px";
+
+                    let html = `
+            <div class="job-header">
+
+                <div class="job-name">
+                    ${job.name}
+                </div>
+
+                <div class="job-description">
+                    ${Math.round(
+                        item.score * 100
+                    )}%一致
+                </div>
+
+            </div>
+        `;
+
+                    if (descriptionText) {
+
+                        html += `
+                <div
+                    class="job-description"
+                    style="
+                        margin-bottom:8px;
+                    "
+                >
+                    ${descriptionText}
+                </div>
+            `;
+                    }
+
+                    // 固定技能
+                    if (job.fixedSkills?.length) {
+
+                        html += `
+                <div
+                    class="job-skills"
+                >
+            `;
+
+                        job.fixedSkills.forEach(
+                            skill => {
+
+                                const skillName =
+                                    getSkillName(
+                                        skill
+                                    );
+
+                                const matched =
+                                    item.matchedSkills
+                                        .includes(
+                                            skillName
+                                        );
+
+                                html += `
+                        <span
+                            class="
+                                skill-chip
+                                ${matched
+                                        ? "suggestion-active"
+                                        : ""
+                                    }
+                            "
+                        >
+                            ${skillName}
+                        </span>
+                    `;
+                            }
+                        );
+
+                        html += `
+                </div>
+            `;
+                    }
+
+                    // 選択技能
+                    if (job.selectSkills?.length) {
+
+                        job.selectSkills
+                            .forEach(group => {
+
+                                html += `
+                        <div
+                            class="
+                                job-select-row
+                            "
+                        >
+                            <div
+                                class="
+                                    job-select-label
+        suggestion
+                                "
+                            >
+                                ＋以下から
+                                ${group.count}
+                                つ選択
+                            </div>
+
+                            <div
+                                class="
+                                    job-skills
+                                "
+                            >
+                    `;
+
+                                group.skills.forEach(
+                                    skill => {
+
+                                        const skillName =
+                                            getSkillName(
+                                                skill
+                                            );
+
+                                        const matched =
+                                            item.matchedSkills
+                                                .includes(
+                                                    skillName
+                                                );
+
+                                        html += `
+                                <span
+                                    class="
+                                        skill-chip
+                                        ${matched
+                                                ? "suggestion-active"
+                                                : ""
+                                            }
+                                    "
+                                >
+                                    ${skillName}
+                                </span>
+                            `;
+                                    }
+                                );
+
+                                html += `
+                            </div>
+                        </div>
+                    `;
+                            });
+                    }
+
+                    card.innerHTML =
+                        html;
+
+                    suggestionContainer
+                        .appendChild(card);
+                });
+
+                jobListEl.appendChild(
+                    suggestionContainer
+                );
+            }
         }
 
         skillSearchEl.addEventListener(
@@ -1672,6 +1833,12 @@ ${usedSkills.length > 0
                     renderSkillList();
                     renderJobs();
                 }
+            );
+
+        showSuggestionsEl
+            .addEventListener(
+                "change",
+                renderJobs
             );
 
         loadJobsCSV();
