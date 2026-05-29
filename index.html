@@ -377,17 +377,24 @@
             background: #d1fae5;
         }
 
-        .suggestion-content {
-            padding: 14px;
-        }
-
         .suggestion-card {
-            border-left: 5px solid #22c55e;
-            background: #ffffffcc;
+            background: #f8fafc;
+            border: 1px dashed #d1d5db;
+            box-shadow: none;
         }
 
         .job-select-label.suggestion {
-            color: #16a34a;
+            color: var(--muted);
+        }
+
+.skill-chip.suggestion-active {
+    background: #cbd5e1;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+        .suggestion-content {
+            padding: 14px;
         }
     </style>
 </head>
@@ -1610,7 +1617,7 @@ ${usedSkills.length > 0
                         "job-card";
 
                     card.style.opacity =
-                        "0.92";
+                        "0.88";
 
                     card.style.marginBottom =
                         "10px";
